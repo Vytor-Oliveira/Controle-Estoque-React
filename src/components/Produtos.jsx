@@ -1,23 +1,21 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import { Button, Menu, MenuItem, Modal, Box, TextField } from "@mui/material"; // Usando MUI
-import Navbar from "./Navbar";
+import React, { useState } from 'react';
+import { Button, Menu, MenuItem, Modal, Box, TextField } from '@mui/material';
+import Navbar from './Navbar';
+import TabelaProdutos from './TabelaProdutos'; // Importe o novo componente
 
 function Produtos() {
   const [produtos, setProdutos] = useState([
-    { id: 1, codigo: "001", nome: "Produto 1", unidade: "Unidade 1", grupo: "Grupo 1", estoque: 10 },
-    { id: 2, codigo: "002", nome: "Produto 2", unidade: "Unidade 2", grupo: "Grupo 2", estoque: 20 },
+    { id: 1, codigo: '001', nome: 'Produto 1', unidade: 'Unidade 1', grupo: 'Grupo 1', estoque: 10 },
+    { id: 2, codigo: '002', nome: 'Produto 2', unidade: 'Unidade 2', grupo: 'Grupo 2', estoque: 20 },
   ]);
-  const [nome, setNome] = useState("");
-  const [unidade, setUnidade] = useState("");
-  const [grupo, setGrupo] = useState("");
+  const [nome, setNome] = useState('');
+  const [unidade, setUnidade] = useState('');
+  const [grupo, setGrupo] = useState('');
 
-  // Estados para o Menu de opções
   const [anchorEl, setAnchorEl] = useState(null);
-  const [openIncluirGrupo, setOpenIncluirGrupo] = useState(false); // Modal "Incluir Grupo"
+  const [openIncluirGrupo, setOpenIncluirGrupo] = useState(false);
+  const [openIncluirProduto, setOpenIncluirProduto] = useState(false);
 
-  // Função para abrir/fechar o Menu de opções
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -36,37 +34,43 @@ function Produtos() {
       estoque: 0,
     };
     setProdutos([...produtos, novoProduto]);
-    handleCloseMenu(); // Fechar o menu após incluir produto
+    handleCloseIncluirProduto(); 
   };
 
-  // Função para abrir/fechar o Modal "Incluir Grupo"
   const handleOpenIncluirGrupo = () => {
     setOpenIncluirGrupo(true);
-    handleCloseMenu(); // Fecha o menu dropdown ao abrir o modal
+    handleCloseMenu();
   };
 
   const handleCloseIncluirGrupo = () => {
     setOpenIncluirGrupo(false);
   };
 
+  const handleOpenIncluirProduto = () => {
+    setOpenIncluirProduto(true);
+    handleCloseMenu();
+  };
+
+  const handleCloseIncluirProduto = () => {
+    setOpenIncluirProduto(false);
+  };
+
   return (
     <div className="container-fluid">
-      {/* Navbar */}
       <Navbar />
 
       {/* Botões de ação */}
       <div className="row mt-3">
         <div className="col">
-          {/* Botão com Menu suspenso */}
-          <Button sx={{ width: '86.65px', height: '38.21px', marginRight: "8.5px" }} variant="contained" color="success" onClick={handleClick}>
+          <Button sx={{ width: '86.65px', height: '38.21px', marginRight: '8.5px' }} variant="contained" color="success" onClick={handleClick}>
             Incluir
           </Button>
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleCloseMenu}>
-            <MenuItem onClick={handleIncluirProduto}>Incluir Produto</MenuItem>
+            <MenuItem onClick={handleOpenIncluirProduto}>Incluir Produto</MenuItem>
             <MenuItem onClick={handleOpenIncluirGrupo}>Incluir Grupo</MenuItem>
           </Menu>
 
-          <Button sx={{ width: '86.65px', height: '38.21px', marginRight: "8.5px" }} variant="contained" color="info">
+          <Button sx={{ width: '86.65px', height: '38.21px', marginRight: '8.5px' }} variant="contained" color="info">
             Alterar
           </Button>
 
@@ -76,39 +80,10 @@ function Produtos() {
         </div>
       </div>
 
-      {/* Tabela de Produtos Cadastradoss */}
+      {/* Tabela de Produtos Cadastrados */}
       <div className="row mt-3">
         <div className="col">
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th><input type="checkbox" /></th>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Unidade de Medida</th>
-                <th>Grupo</th>
-                <th>Estoque</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {produtos.map((produto) => (
-                <tr key={produto.id}>
-                  <td><input type="checkbox" /></td>
-                  <td>{produto.codigo}</td>
-                  <td>{produto.nome}</td>
-                  <td>{produto.unidade}</td>
-                  <td>{produto.grupo}</td>
-                  <td>{produto.estoque}</td>
-                  <td>
-                    <button className="btn btn-danger">
-                      Excluir
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TabelaProdutos produtos={produtos} /> {/* Use o novo componente aqui */}
         </div>
       </div>
 
@@ -121,9 +96,9 @@ function Produtos() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 400,
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
-            boxShadow: 24,
+            bgcolor: '#f5f5f5',
+            borderRadius: '12px',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
             p: 4,
           }}
         >
@@ -136,19 +111,89 @@ function Produtos() {
                 variant="outlined"
                 fullWidth
                 required
+                sx={{ marginBottom: 2 }}
               />
             </div>
-            <Button type="submit" variant="contained" color="primary">
-              Confirmar
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleCloseIncluirGrupo}
-              sx={{ marginLeft: 2 }}
-            >
-              Cancelar
-            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+              <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: '8px' }}>
+                Confirmar
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleCloseIncluirGrupo}
+                sx={{ marginLeft: 2, borderRadius: '8px' }}
+              >
+                Cancelar
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Modal>
+
+      {/* Modal Incluir Produto */}
+      <Modal open={openIncluirProduto} onClose={handleCloseIncluirProduto} aria-labelledby="incluirProdutoModalLabel">
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: '#f5f5f5',
+            borderRadius: '12px',
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+            p: 4,
+          }}
+        >
+          <h5 id="incluirProdutoModalLabel">Incluir Produto</h5>
+          <form id="incluirProdutoForm" onSubmit={(e) => { e.preventDefault(); handleIncluirProduto(); }}>
+            <div className="form-group">
+              <TextField
+                label="Nome"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                fullWidth
+                variant="outlined"
+                required
+                sx={{ marginBottom: 2 }}
+              />
+            </div>
+            <div className="form-group">
+              <TextField
+                label="Unidade de Medida"
+                value={unidade}
+                onChange={(e) => setUnidade(e.target.value)}
+                fullWidth
+                variant="outlined"
+                required
+                sx={{ marginBottom: 2 }}
+              />
+            </div>
+            <div className="form-group">
+              <TextField
+                label="Grupo"
+                value={grupo}
+                onChange={(e) => setGrupo(e.target.value)}
+                fullWidth
+                variant="outlined"
+                required
+                sx={{ marginBottom: 2 }}
+              />
+            </div>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
+              <Button type="submit" variant="contained" color="primary" sx={{ borderRadius: '8px' }}>
+                Confirmar
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleCloseIncluirProduto}
+                sx={{ marginLeft: 2, borderRadius: '8px' }}
+              >
+                Cancelar
+              </Button>
+            </Box>
           </form>
         </Box>
       </Modal>
